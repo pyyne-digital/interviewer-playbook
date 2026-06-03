@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pyyne · Interviewer Playbook</title>
+  <meta name="description" content="A practical guide for conducting consistent, high-quality technical interviews at Pyyne." />
+
+  <!-- Favicon pack -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Playbook CSS -->
+  <link rel="stylesheet" href="assets/css/playbook.css" />
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="topbar-logo" aria-hidden="true">
+        <img src="assets/pyyne-logo.svg" alt="Pyyne logo" width="22" height="24" style="display:block;" />
+      </div>
+      <span class="topbar-name" id="topbar-name">Pyyne</span>
+    </div>
+    <div class="topbar-actions">
+      <span class="topbar-tag" id="topbar-tag">Playbook</span>
+      <span class="topbar-version" id="topbar-version">v1.0</span>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar" aria-label="Playbook navigation">
+    <div id="sidebar-nav"></div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main">
+    <div id="main-content"></div>
+  </main>
+
+</div>
+
+<!-- Content config (edit this to create a new playbook) -->
+<script src="content/config.js"></script>
+<!-- Renderer (do not edit) -->
+<script src="assets/js/playbook.js"></script>
+
+</body>
+</html>
