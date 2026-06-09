@@ -129,13 +129,13 @@ function renderPurpose(s) {
 }
 
 function renderBefore(s) {
-  const formats = s.formats.map(f => `
+  const formats = s.formats ? s.formats.map(f => `
     <div class="format-card">
       <h4><span class="format-dot" style="background:${f.dot}"></span>${f.title}</h4>
       <p>${f.desc}</p>
       <p style="font-size:12.5px; color:#4a6e32; font-style:italic;">${f.note}</p>
     </div>
-  `).join('');
+  `).join('') : '';
 
   return `
     <div class="page-eyebrow">${s.eyebrow}</div>
@@ -153,28 +153,54 @@ function renderBefore(s) {
       </ul>
     </div>
 
-    <div class="sep"></div>
-    <p class="sub-heading">Interview formats</p>
-    <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
-      ${formats}
-    </div>
+    ${s.challengeNote ? `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-blue">${icon('book')}</div>
+        <h3>${s.challengeNote.title}</h3>
+      </div>
+      <p>${s.challengeNote.body}</p>
+    </div>` : ''}
 
+    ${formats ? `
+    <p class="sub-heading">Interview formats</p>
+    <div class="card-grid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr));margin-bottom:16px;">${formats}</div>` : ''}
+
+    ${s.roleNote ? `
     <div class="card">
       <div class="card-header">
         <div class="card-icon icon-amber">${icon('target')}</div>
         <h3>${s.roleNote.title}</h3>
       </div>
       <ul>${s.roleNote.items.map(i => `<li>${i}</li>`).join('')}</ul>
-    </div>
+    </div>` : ''}
   `;
 }
 
+
 function renderDuring(s) {
+  const coreSignals = s.coreCard ? s.coreCard.signals.map(sig => `
+    <div style="padding:12px 0; border-bottom:1px solid var(--border);">
+      <p style="font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:4px;">${sig.label}</p>
+      <p style="font-size:13px; color:var(--ink-3); line-height:1.65;">${sig.desc}</p>
+    </div>
+  `).join('') : '';
+
   return `
     <div class="page-eyebrow">${s.eyebrow}</div>
     <h1 class="page-title">${s.title}</h1>
     <p class="page-subtitle">${s.subtitle}</p>
     <div class="page-divider"></div>
+
+    ${s.coreCard ? `
+    <div class="card" style="background:var(--brand-light); border-color:var(--brand-sage);">
+      <div class="card-header">
+        <div class="card-icon icon-teal">${icon('target')}</div>
+        <h3>${s.coreCard.title}</h3>
+      </div>
+      <p style="font-size:14px; color:var(--ink-2); line-height:1.7; margin-bottom:16px;">${s.coreCard.intro}</p>
+      ${coreSignals}
+    </div>` : ''}
 
     <div class="card">
       <div class="card-header">
@@ -203,22 +229,13 @@ function renderDuring(s) {
       </div>
       <div class="card">
         <div class="card-header">
-          <div class="card-icon icon-red">${icon('warning')}</div>
-          <h3>${s.aiSuspectCard.title}</h3>
+          <div class="card-icon icon-purple">${icon('clipboard-check')}</div>
+          <h3>${s.notesCard.title}</h3>
         </div>
-        <p style="margin-bottom:10px;">${s.aiSuspectCard.body}</p>
-        <ul>${s.aiSuspectCard.items.map(i => `<li>${i}</li>`).join('')}</ul>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <div class="card-icon icon-purple">${icon('clipboard-check')}</div>
-        <h3>${s.notesCard.title}</h3>
-      </div>
-      <p style="margin-bottom:12px;">${s.notesCard.body}</p>
-      <div class="pill-row">
-        ${s.notesCard.pills.map(p => `<span class="badge badge-teal">${p}</span>`).join('')}
+        <p style="margin-bottom:12px;">${s.notesCard.body}</p>
+        <div class="pill-row">
+          ${s.notesCard.pills.map(p => `<span class="badge badge-teal">${p}</span>`).join('')}
+        </div>
       </div>
     </div>
   `;
@@ -383,21 +400,193 @@ function renderChangelog(s) {
   `;
 }
 
+/* ── What We Evaluate ─────────────────────────────── */
+function renderWhatWeEval(s) {
+  const dims = s.dimensions.map(d => `
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon ${d.iconClass}">${icon(d.iconSvg)}</div>
+        <div>
+          <h3>${d.title}</h3>
+        </div>
+      </div>
+      <p style="font-size:13.5px; color:var(--ink-3); font-style:italic; margin-bottom:12px; line-height:1.6;">${d.why}</p>
+      <p style="font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--ink-4); margin-bottom:8px;">Observable signals</p>
+      <ul>${d.signals.map(sig => `<li>${sig}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+
+  return `
+    <div class="page-eyebrow">${s.eyebrow}</div>
+    <h1 class="page-title">${s.title}</h1>
+    <p class="page-subtitle">${s.subtitle}</p>
+    <div class="page-divider"></div>
+    ${renderAlert(s.alert)}
+    ${dims}
+  `;
+}
+
+/* ── STAR Framework ───────────────────────────────── */
+function renderStar(s) {
+  // Support both old shape (s.letters) and new shape (s.dimensions)
+  const dims = s.dimensions || s.letters || [];
+  const letters = dims.map(l => `
+    <div class="card" style="border-top:3px solid var(--brand);">
+      <div style="display:flex; gap:16px; align-items:flex-start;">
+        <div style="font-family:var(--font-display); font-size:42px; line-height:1; color:var(--brand); flex-shrink:0; width:44px;">${l.letter}</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:6px;">${l.word}</h3>
+          ${l.question ? `<p style="font-size:13px; color:#4a6e32; font-style:italic; margin-bottom:8px;">Ask: "${l.question}"</p>` : ''}
+          ${l.desc ? `<p style="margin-bottom:8px;">${l.desc}</p>` : ''}
+          ${l.look ? `<p style="font-size:12.5px; color:var(--ink-4);">Look for: ${l.look}</p>` : ''}
+          ${l.probe ? `<p style="font-size:12.5px; color:#4a6e32; font-style:italic;">${l.probe}</p>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const examples = s.examples.map(e => `
+    <div style="padding:14px 0; border-bottom:1px solid var(--border);">
+      <p style="font-size:14px; font-weight:600; color:var(--ink); margin-bottom:6px;">"${e.q || e.question}"</p>
+      <p style="font-size:13px; color:var(--ink-3); line-height:1.6;"><strong style="color:var(--ink-4); font-weight:500; text-transform:uppercase; font-size:10px; letter-spacing:0.06em;">Reveals:</strong> ${e.why || e.whatItReveals}</p>
+    </div>
+  `).join('');
+
+  return `
+    <div class="page-eyebrow">${s.eyebrow}</div>
+    <h1 class="page-title">${s.title}</h1>
+    <p class="page-subtitle">${s.subtitle}</p>
+    <div class="page-divider"></div>
+    ${s.alert ? renderAlert(s.alert) : ''}
+    <p style="font-size:14px; color:var(--ink-2); line-height:1.7; margin-bottom:24px;">${s.intro}</p>
+    <div class="card-grid">${letters}</div>
+    <div class="sep"></div>
+    <p class="sub-heading">Example questions</p>
+    <div class="card">${examples}</div>
+    ${s.usageNote ? `<div class="alert alert-success" style="margin-top:16px;">
+      ${icon('bulb', 18)}
+      <p>${s.usageNote}</p>
+    </div>` : ''}
+    ${s.tip ? `<div class="alert alert-success" style="margin-top:16px;">
+      ${icon('bulb', 18)}
+      <p>${s.tip}</p>
+    </div>` : ''}
+  `;
+}
+
+/* ── Choosing a Challenge ─────────────────────────── */
+function renderChallenge(s) {
+  const principles = s.principles.map(p => `
+    <div class="card">
+      <h3 style="margin-bottom:8px;">${p.title}</h3>
+      <p>${p.body}</p>
+    </div>
+  `).join('');
+
+  const formats = s.formats.map(f => `
+    <div class="format-card">
+      <h4><span class="format-dot" style="background:${f.dot}"></span>${f.title}</h4>
+      <p>${f.desc}</p>
+      <p style="font-size:12.5px; color:var(--brand-dark); font-style:italic;">${f.note}</p>
+    </div>
+  `).join('');
+
+  return `
+    <div class="page-eyebrow">${s.eyebrow}</div>
+    <h1 class="page-title">${s.title}</h1>
+    <p class="page-subtitle">${s.subtitle}</p>
+    <div class="page-divider"></div>
+    ${renderAlert(s.alert)}
+    <p class="sub-heading">Ground rules</p>
+    ${principles}
+    <div class="sep"></div>
+    <p class="sub-heading">Interview formats</p>
+    <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-bottom:16px;">${formats}</div>
+    <div class="card" style="background:var(--brand-light); border-color:var(--brand-sage);">
+      <div class="card-header">
+        <div class="card-icon icon-teal">${icon('robot')}</div>
+        <h3>${s.aiNote.title}</h3>
+      </div>
+      <p>${s.aiNote.body}</p>
+    </div>
+  `;
+}
+
+/* ── During — extended ────────────────────────────── */
+function renderDuringExtended(s) {
+  const watchItems = s.watchFor.items.map(i => `<li>${i}</li>`).join('');
+
+  return `
+    <div class="page-eyebrow">${s.eyebrow}</div>
+    <h1 class="page-title">${s.title}</h1>
+    <p class="page-subtitle">${s.subtitle}</p>
+    <div class="page-divider"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-teal">${icon('microphone')}</div>
+        <h3>${s.openingCard.title}</h3>
+      </div>
+      <ul>${s.openingCard.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon icon-blue">${icon('users')}</div>
+        <h3>${s.conversationCard.title}</h3>
+      </div>
+      <ul>${s.conversationCard.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-amber">${icon('bulb')}</div>
+          <h3>${s.stuckCard.title}</h3>
+        </div>
+        <p style="margin-bottom:10px;">${s.stuckCard.body}</p>
+        <ul>${s.stuckCard.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-purple">${icon('clipboard-check')}</div>
+          <h3>${s.notesCard.title}</h3>
+        </div>
+        <p style="margin-bottom:12px;">${s.notesCard.body}</p>
+        <div class="pill-row">
+          ${s.notesCard.pills.map(p => `<span class="badge badge-teal">${p}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="background:var(--brand-light); border-color:var(--brand-sage);">
+      <div class="card-header">
+        <div class="card-icon icon-teal">${icon('target')}</div>
+        <h3>${s.watchFor.title}</h3>
+      </div>
+      <ul>${watchItems}</ul>
+    </div>
+  `;
+}
+
 /* ── Route to correct renderer ────────────────────── */
 function renderSection(id, sections) {
   const s = sections[id];
   if (!s) return `<p>Section not found.</p>`;
   switch (id) {
-    case 'overview':   return renderOverview(s);
-    case 'purpose':    return renderPurpose(s);
-    case 'before':     return renderBefore(s);
-    case 'during':     return renderDuring(s);
-    case 'after':      return renderAfter(s);
-    case 'ai-tools':   return renderAiTools(s);
-    case 'evaluation': return renderEvaluation(s);
-    case 'learnings':  return renderLearnings(s);
-    case 'changelog':  return renderChangelog(s);
-    default:           return `<p>Section not found.</p>`;
+    case 'overview':      return renderOverview(s);
+    case 'purpose':       return renderPurpose(s);
+    case 'what-we-eval':  return renderWhatWeEval(s);
+    case 'star':          return renderStar(s);
+    case 'challenge':     return renderChallenge(s);
+    case 'before':        return renderBefore(s);
+    case 'during':        return renderDuring(s);
+    case 'after':         return renderAfter(s);
+    case 'ai-tools':      return renderAiTools(s);
+    case 'evaluation':    return renderEvaluation(s);
+    case 'learnings':     return renderLearnings(s);
+    case 'changelog':     return renderChangelog(s);
+    default:              return `<p>Section not found.</p>`;
   }
 }
 
